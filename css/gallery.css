@@ -1,0 +1,50 @@
+body {
+  font-family: Monospace;
+  background-color: #101010;
+  color: #fff;
+  margin: 0px;
+  overflow: hidden;
+}
+
+#viewer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+#thumbnail-gallery {
+  overflow: scroll;
+  white-space: nowrap;
+  position: fixed;
+  bottom: 0.5em;
+  width: 100%;
+}
+
+#thumbnail-gallery .thumbnail {
+  transition: border-color 0.3s;
+  display: inline-block;
+  width: 128px;
+  height: 128px;
+  margin: 0.5em;
+  overflow: hidden;
+  background-color: gray;
+  border: 1px gray solid;
+  border-radius: 64px;
+  box-shadow: 5px 5px 5px black;
+}
+
+#thumbnail-gallery .thumbnail:hover {
+  border-color: white;
+}
+
+#thumbnail-gallery .thumbnail img{
+  height: 256px;
+  margin-top: -64px;
+  margin-left: -128px;
+}
+
+.webvr-ui-button {
+  margin: 1em;
+}

@@ -1,0 +1,348 @@
+{
+    "inserts": [
+        [
+            {
+                "comment": "Step 0: Gallery images",
+
+                "after": "360 Photo Viewer",
+                "insert": [
+                    "",
+                    "let galleryImages = [",
+                    "'media/images/image0.jpg',",
+                    "'media/images/image1.jpg',",
+                    "'media/images/image2.jpg',",
+                    "'media/images/image3.jpg',",
+                    "'media/images/image4.jpg',",
+                    "'media/images/image5.jpg',",
+                    "'media/images/image6.jpg',",
+                    "'media/images/image7.jpg',",
+                    "];"
+                ],
+                "instant": true
+            }
+        ],
+
+        [
+            {
+                "comment": "Step 1: Image viewing surface",
+
+                "after": "let textureLoader;",
+                "insert": "let viewer;",
+                "instant": true,
+                "highlight": false
+            },
+            {
+                "after": "textureLoader = new THREE.TextureLoader();",
+                "insert": [
+                    "",
+                    "// Image viewer",
+                    "let viewerGeometry = new THREE.SphereGeometry(500, 60, 40);",
+                    "viewerGeometry.scale(-1, 1, 1);",
+                    "",
+                    "let viewerMaterial = new THREE.MeshBasicMaterial({map: textureLoader.load(galleryImages[0])});",
+                    "",
+                    "viewer = new THREE.Mesh(viewerGeometry, viewerMaterial);",
+                    "viewer.rotation.y = -Math.PI / 2;",
+                    "scene.add(viewer);"
+                ]
+            }
+        ],
+
+
+        [
+            {
+                "comment": "Step 2: Polyfill and VRControls",
+
+                "after": "// 360 Photo Viewer",
+                "insert": [
+                    "",
+                    "import WebVRPolyfill from '../node_modules/webvr-polyfill';"
+                ]
+            }
+        ],
+
+        [
+            {
+                "comment": "Step 2.1: Polyfill and VRControls",
+
+                "after": "let viewer;",
+                "insert": [
+                    "",
+                    "let vrControls;"
+                ],
+                "instant": true,
+                "highlight": false
+            },
+            {
+                "after": "viewerContainer.appendChild(renderer.domElement);",
+                "insert": [
+                    "",
+                    "vrControls = new THREE.VRControls(camera);"
+                ]
+            },
+            {
+                "after": "let delta = clock.getDelta() * 60;",
+                "insert": [
+                    "",
+                    "vrControls.update();"
+                ]
+            }
+        ],
+
+        {
+            "comment": "Step 3: 2D Thumbnail Gallery",
+
+            "after": "scene.add(viewer);",
+            "insert": [
+                "",
+                "// Thumbnail Gallery",
+                "for (let i = 0; i < galleryImages.length; ++i) {",
+                "let texture = textureLoader.load(galleryImages[i]);",
+                "addToGallery2D(texture);",
+                "}"
+            ]
+        },
+
+        [
+            {
+                "comment": "Step 3.1: 2D Thumbnail Gallery",
+
+                "after": "let viewerContainer = document.getElementById('viewer');",
+                "insert": "let gallery2D = document.getElementById('thumbnail-gallery');"
+            },
+            {
+                "after": "let vrControls;",
+                "insert": [
+                    "",
+                    "function addToGallery2D(texture) {",
+                    "let thumbnail = document.createElement('div');",
+                    "thumbnail.classList.add('thumbnail');",
+                    "thumbnail.appendChild(texture.image);",
+                    "thumbnail.addEventListener('click', function() {",
+                    "viewer.material.map = texture;",
+                    "});",
+                    "gallery2D.appendChild(thumbnail);",
+                    "}"
+                ]
+            },
+        ],
+
+        {
+            "comment": "Step 4: WebVR UI",
+
+            "after": "import WebVRPolyfill from '../node_modules/webvr-polyfill';",
+            "insert": "import * as webvrui from '../node_modules/webvr-ui';"
+        },
+
+        [
+            {
+                "comment": "Step 4.1: WebVR UI",
+
+                "after": "let viewer;",
+                "insert": "let enterVR;",
+                "instant": true,
+                "highlight": false
+            },
+            {
+                "after": "let vrControls;",
+                "insert": "let vrDisplay;",
+                "instant": true,
+                "highlight": false
+            },
+            {
+                "after": "vrControls = new THREE.VRControls(camera);",
+                "insert": [
+                    "",
+                    "// WebVR Button",
+                    "enterVR = new webvrui.EnterVRButton(renderer.domElement, {});",
+                    "document.body.appendChild(enterVR.domElement);"
+                ]
+            },
+            {
+                "after": "document.body.appendChild(enterVR.domElement);",
+                "insert": [
+                    "",
+                    "enterVR.getVRDisplay().then((display)=>{",
+                    "vrDisplay = display;",
+                    "});"
+                ]
+            }
+        ],
+
+        [
+            {
+                "comment": "Step 4.2: WebVR UI",
+
+                "after": "let vrControls;",
+                "insert": "let vrEffect;",
+                "instant": true,
+                "highlight": false
+            },
+            {
+                "after": "vrControls = new THREE.VRControls(camera);",
+                "insert": "vrEffect = new THREE.VREffect(renderer);"
+            }
+        ],
+
+        [
+            {
+                "comment": "Step 4.3: WebVR UI",
+
+                "replace": "renderer.render(scene, camera);",
+                "insert": [
+                    "if (enterVR.isPresenting()) {",
+                    "vrEffect.render(scene, camera);",
+                    "} else {",
+                    "renderer.render(scene, camera);",
+                    "}"
+                ]
+            },
+            {
+                "replace": "window.requestAnimationFrame(animate);",
+                "insert": "(vrDisplay ? vrDisplay : window).requestAnimationFrame(animate);"
+            }
+        ],
+
+        [
+            {
+                "comment": "Step 5: 3D thumbnail gallery",
+
+                "after": "let enterVR;",
+                "insert": "let gallery3D;",
+                "instant": true,
+                "highlight": false
+            },
+
+            {
+                "after": "scene.add(viewer);",
+                "insert": [
+                    "",
+                    "// Thumbnail Gallery",
+                    "gallery3D = new THREE.Object3D();",
+                    "gallery3D.position.y = thumbHeight;",
+                    "scene.add(gallery3D);",
+                    "",
+                    "let thumbGeometry = new THREE.SphereGeometry(0.15, 60, 40);",
+                    "thumbGeometry.scale(-1, 1, 1);"
+                ]
+            },
+            {
+                "after": "addToGallery2D(texture);",
+                "insert": "addToGallery3D(texture, thumbGeometry, i);"
+            },
+        ],
+
+        [
+            {
+                "comment": "Step 5.1: 3D thumbnail gallery",
+
+                "after": "let vrDisplay;",
+                "insert": [
+                    "",
+                    "const thumbDeltaAngle = Math.PI / 10;",
+                    "const thumbStartAngle = Math.PI * 1.25;",
+                    "const thumbHeight = -0.5;",
+                    "const thumbDistance = 1.0;",
+                    "",
+                    "function addToGallery3D(texture, geometry, i) {",
+                    "let thumbMaterial = new THREE.MeshBasicMaterial({",
+                    "map: texture",
+                    "});",
+                    "",
+                    "let thumbnail = new THREE.Mesh(geometry, thumbMaterial);",
+                    "thumbnail.position.x = Math.cos(thumbStartAngle + (thumbDeltaAngle * i)) * thumbDistance;",
+                    "thumbnail.position.z = Math.sin(thumbStartAngle + (thumbDeltaAngle * i)) * thumbDistance;",
+                    "",
+                    "gallery3D.add(thumbnail);",
+                    "}"
+                ]
+            },
+        ],
+
+        {
+            "comment": "Step 5.2: 3D thumbnail gallery",
+
+            "after": "vrControls.update();",
+            "insert": "gallery3D.visible = enterVR.isPresenting();"
+        },
+
+        {
+            "comment": "Step 6: RayInput",
+
+            "after": "import * as webvrui from '../node_modules/webvr-ui';",
+            "insert": "import RayInput from '../node_modules/ray-input';"
+        },
+
+        [
+            {
+                "comment": "Step 6.1: RayInput",
+
+                "after": "let gallery3D;",
+                "insert": "let rayInput;",
+                "instant": true,
+                "highlight": false
+            },
+            {
+                "after": "vrDisplay = display;",
+                "insert": [
+                    "",
+                    "// Initialize RayInput for picking in VR",
+                    "rayInput = new RayInput(camera);",
+                    "rayInput.setSize(renderer.getSize());",
+                    "scene.add(rayInput.getMesh());"
+                ]
+            },
+            {
+                "after": "if (enterVR.isPresenting()) {",
+                "insert": "rayInput.update();"
+            }
+        ],
+
+        [
+            {
+                "comment": "Step 7: 3D Thumnail selection",
+
+                "after": "const thumbDistance = 1.0;",
+                "insert": [
+                    "const thumbDefaultOpacity = 0.3;",
+                    "const thumbHoverOpacity = 0.9;"
+                ]
+            },
+            {
+                "after": "let thumbMaterial = new THREE.MeshBasicMaterial({",
+                "insert": [
+                    "transparent: true,",
+                    "opacity: thumbDefaultOpacity,"
+                ]
+            }
+        ],
+
+        [
+            {
+                "comment": "Step 7.1: 3D Thumnail selection",
+
+                "after": "scene.add(rayInput.getMesh());",
+                "insert": [
+                    "",
+                    "// Register each selectable thumbnail",
+                    "for (let i = 0; i < gallery3D.children.length; ++i) {",
+                    "rayInput.add(gallery3D.children[i]);",
+                    "}",
+                    "",
+                    "// Ray Input event handling",
+                    "rayInput.on('rayover', (thumbnail) => {",
+                    "thumbnail.material.opacity = thumbHoverOpacity;",
+                    "});",
+                    "rayInput.on('rayout', (thumbnail) => {",
+                    "thumbnail.material.opacity = thumbDefaultOpacity;",
+                    "});",
+                    "rayInput.on('raydown', (thumbnail) => {",
+                    "if (enterVR.isPresenting() && thumbnail) {",
+                    "viewer.material.map = thumbnail.material.map;",
+                    "}",
+                    "});"
+                ]
+            }
+        ]
+    ]
+}

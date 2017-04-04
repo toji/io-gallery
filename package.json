@@ -1,0 +1,43 @@
+{
+  "name": "io-gallery",
+  "version": "0.0.1",
+  "description": "WebVR Gallery - Google I/O 2017",
+  "license": "MIT",
+  "readme": "README.md",
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
+  },
+  "dependencies": {
+    "ray-input": "^0.1.2",
+    "three": "^0.85.1",
+    "webvr-polyfill": "^0.9.27",
+    "webvr-ui": "^0.9.4"
+  },
+  "scripts": {
+    "build": "npm run browserify & npm run browserifymin",
+    "browserify": "browserify src/gallery_final.js --standalone gallery | derequire > build/gallery.js",
+    "browserifymin": "browserify -g uglifyify src/gallery_final.js --standalone gallery | derequire > build/gallery.min.js",
+    "start": "budo src/gallery.js:build/gallery.min.js --live --verbose --port 3000 -- --standalone gallery",
+    "lint": "eslint -c .eslintrc.json src"
+  },
+  "devDependencies": {
+    "babel-preset-es2015": "^6.16.0",
+    "babelify": "^7.3.0",
+    "browserify": "^14.0.0",
+    "budo": "^9.2.1",
+    "derequire": "^2.0.3",
+    "eslint": "^3.13.1",
+    "eslint-config-google": "^0.7.1",
+    "tape": "^4.6.2",
+    "uglifyify": "^3.0.4"
+  }
+}
